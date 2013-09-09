@@ -6,7 +6,9 @@
 #define false 0
 #define true 1
 
-void step(char *p, int ch) {
+char *p;
+
+void step(int ch) {
     switch(ch) {
         case '>':
             ++p;
@@ -41,9 +43,9 @@ void parse(char *fname) {
     FILE *f;
     int ch;
     char a[30000];
-    char *p = a;
     char scmd[30000];
 
+    p = a;
     f = fopen(fname, "r");
     if(f == NULL) {
         fprintf(stderr, "Unable to open file.\n");
@@ -52,11 +54,12 @@ void parse(char *fname) {
 
     while( (ch = getc(f)) != EOF) {
         if(ch == '[') {
+            //Start our loop handler
             int subCh;
             bool bdone = false;
             scmd[0] = '\0';
 
-            printf("Starting loop!\n");
+            //printf("Starting loop!\n");
             while(!bdone) {
                 subCh = getc(f);
 
@@ -76,14 +79,25 @@ void parse(char *fname) {
             }
 
             if(strlen(scmd) > 0) {
-                printf("Finished loop\n");
-                printf("%s\n", scmd);
+                int loop = 0;
+                //printf("Finished loop\n");
+                //printf("%s\n", scmd);
+
+                //Execute loop contents
+                while(*p && ++loop < 30000) {
+                    int i=0, j=strlen(scmd);
+                    for(i=0; i < j; i++) {
+                        step(scmd[i]);
+                    }
+                }
+                //printf("loop=%d\n", loop);
             }else {
                 printf("ERROR: No commands found in loop.\n");
                 exit(1);
             }
         }else {
-            step(p, ch);
+            //Process some other character
+            step(ch);
         }
     }
 
